@@ -11,7 +11,8 @@ Hardware and software used
 
 Recommendations
   Try not to supply the voltage for the nrf24l01 from the Arduino Micro board. It caused a lot of trouble for nothing for an obscure reason.
-  Used external power supply like the HW-131 power supply for breadboard during tests.
+  Used external power supply like the HW-131 power supply for breadboard during tests. Maybe mine was broken but I didn't waste any time on testing 
+  why.
 
 SPI
   SPI configuration is not this critical but simple is best. SPI mode 0, 8MHz speed, master mode.
