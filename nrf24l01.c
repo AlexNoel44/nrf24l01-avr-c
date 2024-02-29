@@ -2,9 +2,9 @@
 * @file nrf24l01.c
 * @author anoel
 * @version 0.1
-* @date 2 février 2024
-* @brief Cette bibliothèque implémente les fonctionnalitées nécéssaire pour communiquer avec un nrf24l01.
-* @hardware Nordic semiconductor nrf24l01, utilisé avec ATmega 32u4.
+* @date 2 fÃ©vrier 2024
+* @brief Cette bibliothÃ¨que implÃ©mente les fonctionnalitÃ©es nÃ©cÃ©ssaire pour communiquer avec un nrf24l01.
+* @hardware Nordic semiconductor nrf24l01, utilisÃ© avec ATmega 32u4.
 * @datasheet https://www.sparkfun.com/datasheets/Components/nRF24L01_prelim_prod_spec_1_2.pdf
 */ 
 
@@ -14,26 +14,26 @@
 uint8_t* rxDataBuffer=0;
 uint8_t rxDataBufferSize=0;
 
-////////////////////////////////////////////////////////////////////////////// FONCTIONS "PRIVÉES" /////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////// FONCTIONS "PRIVÃ‰ES" /////////////////////////////////////////////////////////////////////
 
 /*
-* @brief Sert à écrire un octet dans un registre.
-* @param uint8_t reg : le registre du nrf24l01 dans lequel il faut écrire, uint8_t value : valeur à écrire dans reg.
+* @brief Sert Ã  Ã©crire un octet dans un registre.
+* @param uint8_t reg : le registre du nrf24l01 dans lequel il faut Ã©crire, uint8_t value : valeur Ã  Ã©crire dans reg.
 * @return void.
 */
 void _nrf24l01WriteRegister(uint8_t reg, uint8_t value)
 {
-	CS_PIN_DOWN;										//Met la pin de Chip Select du master (32u4) à 0 pour que le slave soit à l'écoute (nrf24l01)
-	spiMasterReadWrite(W_REGISTER | (reg & 0x1F));		//Transmission spi avec commande d'écriture registre W_REGISTER = 001A AAAA, donc 0x20. Un masque OU est appliqué avec la valeur du registre qui va au maximum à 31, d'où le masque ET 0x1F avec la valeur reg.
-	spiMasterReadWrite(value);							//Transmet la valeur à écrire dans le registre.
-	CS_PIN_UP;											//Impulsion de Chip Enable du nrf24l01 pour envoyer les données.
+	CS_PIN_DOWN;										//Met la pin de Chip Select du master (32u4) Ã  0 pour que le slave soit Ã  l'Ã©coute (nrf24l01)
+	spiMasterReadWrite(W_REGISTER | (reg & 0x1F));		//Transmission spi avec commande d'Ã©criture registre W_REGISTER = 001A AAAA, donc 0x20. Un masque OU est appliquÃ© avec la valeur du registre qui va au maximum Ã  31, d'oÃ¹ le masque ET 0x1F avec la valeur reg.
+	spiMasterReadWrite(value);							//Transmet la valeur Ã  Ã©crire dans le registre.
+	CS_PIN_UP;											//Impulsion de Chip Enable du nrf24l01 pour envoyer les donnÃ©es.
 }
 
 /*********************************************************************************************************************************************************************/
 
 /*
-* @brief Tout dépendant de l'état de rw. Si rw=1, la fonction écrit plusieurs octets dans le registre reg. Si rw=0, la fonction lit toutes les données contenues dans le registre R_RX_PAYLOAD.
-* @param uint8_t rw : "read" ou "write", uint8_t reg : registre visé par l'action rw, uint8_t* value : pointeur de données du tableau d'octets à écrire dans le registre, uint8_t size : taille du tableau value.
+* @brief Tout dÃ©pendant de l'Ã©tat de rw. Si rw=1, la fonction Ã©crit plusieurs octets dans le registre reg. Si rw=0, la fonction lit toutes les donnÃ©es contenues dans le registre R_RX_PAYLOAD.
+* @param uint8_t rw : "read" ou "write", uint8_t reg : registre visÃ© par l'action rw, uint8_t* value : pointeur de donnÃ©es du tableau d'octets Ã  Ã©crire dans le registre, uint8_t size : taille du tableau value.
 * @return return 1 : si la radio est disponible, return 0 : si la radio est indisponible.
 */
 uint8_t *_nrf24l01WriteMoreRegister(uint8_t rw, uint8_t reg, uint8_t* value, uint8_t size)
@@ -66,8 +66,8 @@ uint8_t *_nrf24l01WriteMoreRegister(uint8_t rw, uint8_t reg, uint8_t* value, uin
 /*********************************************************************************************************************************************************************/
 
 /*
-* @brief Retourne la valeur contenue dans un registre séléctionné.
-* @param uint8_t reg : registre à lire.
+* @brief Retourne la valeur contenue dans un registre sÃ©lÃ©ctionnÃ©.
+* @param uint8_t reg : registre Ã  lire.
 * @return uint8_t reg : retourne la valeur du registre reg.
 */
 uint8_t _nrf24l01ReadRegister(uint8_t reg)
@@ -93,7 +93,7 @@ void nrf24l01Init(uint8_t mode, uint8_t* address, uint8_t channel)
 	uint8_t val[5];
 	
 	val[0]=0x3f;
-	_nrf24l01WriteMoreRegister(1, EN_AA, val, 1);	//Se référer à la "datasheet" pour la configuration des registres plus bas. (Flemme de tous les détailler).
+	_nrf24l01WriteMoreRegister(1, EN_AA, val, 1);	//Se rÃ©fÃ©rer Ã  la "datasheet" pour la configuration des registres plus bas. (Flemme de tous les dÃ©tailler).
 	
 	val[0]=0x00;
 	_nrf24l01WriteMoreRegister(1, SETUP_RETR, val, 1);
@@ -162,9 +162,9 @@ void nrf24l01Init(uint8_t mode, uint8_t* address, uint8_t channel)
 
 uint8_t nrf24l01Available()
 {	
-	if(((_nrf24l01ReadRegister(STATUS)&(1<<RX_DR))!=0) && ((_nrf24l01ReadRegister(FIFO_STATUS)&(1<<RX_EMPTY))!=1))	//Vérifie que la fifo rx reçois des données et qu'elle n'est pas vide.(La deuxièeme condition est redondante mais ne sait-on jamais)
-		return 1;																									//Retourne 1 si le module reçoit des données et est donc disponible
-	return 0;																										//Retourne 0 si le module ne reçoit pas de données et n'est donc pas disponible.
+	if(((_nrf24l01ReadRegister(STATUS)&(1<<RX_DR))!=0) && ((_nrf24l01ReadRegister(FIFO_STATUS)&(1<<RX_EMPTY))!=1))	//VÃ©rifie que la fifo rx reÃ§ois des donnÃ©es et qu'elle n'est pas vide.(La deuxiÃ¨eme condition est redondante mais ne sait-on jamais)
+		return 1;																									//Retourne 1 si le module reÃ§oit des donnÃ©es et est donc disponible
+	return 0;																										//Retourne 0 si le module ne reÃ§oit pas de donnÃ©es et n'est donc pas disponible.
 }
 
 /*********************************************************************************************************************************************************************/
@@ -177,13 +177,13 @@ void nrf24l01Transmit(uint8_t *payload, uint8_t size)
 	CE_PIN_UP;
 		
 	_nrf24l01WriteMoreRegister(0, FLUSH_TX, payload, 0);														//"Flush" le buffer TX.
-	_nrf24l01WriteMoreRegister(0, W_TX_PAYLOAD, payload, 32);													//Écrit les données vers la fifo tx, il n'est pas obligatoire d'écrire sur les 32 octets de la fifo tx.
+	_nrf24l01WriteMoreRegister(0, W_TX_PAYLOAD, payload, 32);													//Ã‰crit les donnÃ©es vers la fifo tx, il n'est pas obligatoire d'Ã©crire sur les 32 octets de la fifo tx.
 	
-	while(!(_nrf24l01ReadRegister(STATUS) & ((1<<TX_DS) | (1<<MAX_RT))));										//Attend que la transmission soit completée, aucun mécanisme en place si jamais il se passe un problème (oups).
+	while(!(_nrf24l01ReadRegister(STATUS) & ((1<<TX_DS) | (1<<MAX_RT))));										//Attend que la transmission soit completÃ©e, aucun mÃ©canisme en place si jamais il se passe un problÃ¨me (oups).
 
 	CE_PIN_DOWN;
 
-	_nrf24l01WriteRegister(STATUS, (_nrf24l01ReadRegister(STATUS) | (1<<TX_DS) | (1<<MAX_RT) | (1<<RX_DR)));	//"Clear" les "flags" qui doivent l'être après la transmission.
+	_nrf24l01WriteRegister(STATUS, (_nrf24l01ReadRegister(STATUS) | (1<<TX_DS) | (1<<MAX_RT) | (1<<RX_DR)));	//"Clear" les "flags" qui doivent l'Ãªtre aprÃ¨s la transmission.
 }
 
 /*********************************************************************************************************************************************************************/
@@ -191,11 +191,11 @@ void nrf24l01Transmit(uint8_t *payload, uint8_t size)
 uint8_t* nrf24l01Receive()
 {
 	if((_nrf24l01ReadRegister(FIFO_STATUS) & (1<<RX_EMPTY))!=0)
-		_nrf24l01WriteMoreRegister(0, FLUSH_TX, rxDataBuffer, 0);				//"Flush" la fifo rx si elle est au maximum de sa capacité.
+		_nrf24l01WriteMoreRegister(0, FLUSH_TX, rxDataBuffer, 0);				//"Flush" la fifo rx si elle est au maximum de sa capacitÃ©.
 		
 	rxDataBuffer=_nrf24l01WriteMoreRegister(0, R_RX_PAYLOAD, rxDataBuffer, 32);	
 		
-	_nrf24l01WriteRegister(STATUS, _nrf24l01ReadRegister(STATUS) | (1<<RX_DR));	//Réinitialiser le bit RX_DR n'est pas obligatoire, mais c'est une bonne pratique.
+	_nrf24l01WriteRegister(STATUS, _nrf24l01ReadRegister(STATUS) | (1<<RX_DR));	//RÃ©initialiser le bit RX_DR n'est pas obligatoire, mais c'est une bonne pratique.
 	
 	return rxDataBuffer;
 }
@@ -206,7 +206,7 @@ uint8_t nrf24l01RxBufferSize(void)
 {
 	rxDataBufferSize=0;
 	
-	while (rxDataBuffer[rxDataBufferSize] != 0x00)	//Rend la taille du tableau, ce n'est pas la meilleure des solutions car si une données utile dans le tableau est égale à 0, la lecture va s'arrêter à cette donnée.
+	while (rxDataBuffer[rxDataBufferSize] != 0x00)	//Rend la taille du tableau, ce n'est pas la meilleure des solutions car si une donnÃ©e utile dans le tableau est Ã©gale Ã  0, la lecture va s'arrÃªter Ã  cette donnÃ©e.
 	{
 		rxDataBufferSize++;
 	}	
@@ -218,14 +218,14 @@ uint8_t nrf24l01RxBufferSize(void)
 void powerDownMode(void)
 {
 	CE_PIN_DOWN;
-	_nrf24l01WriteRegister(CONFIG, _nrf24l01ReadRegister(CONFIG) & ~(1<<PWR_UP));	//Met PWR_UP à 0 pour passer en mode power down.
+	_nrf24l01WriteRegister(CONFIG, _nrf24l01ReadRegister(CONFIG) & ~(1<<PWR_UP));	//Met PWR_UP Ã  0 pour passer en mode power down.
 }
 
 /*********************************************************************************************************************************************************************/
 
 void powerUpMode(void)
 {
-	_nrf24l01WriteRegister(CONFIG, _nrf24l01ReadRegister(CONFIG) | (1<<PWR_UP));	//Met PWR_UP à 1 pour passer en mode power up.
+	_nrf24l01WriteRegister(CONFIG, _nrf24l01ReadRegister(CONFIG) | (1<<PWR_UP));	//Met PWR_UP Ã  1 pour passer en mode power up.
 }
 
 /*********************************************************************************************************************************************************************/
